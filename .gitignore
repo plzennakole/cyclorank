@@ -1,11 +1,3 @@
-city_polygons/
-full_maps/
-extracted_maps/
-results/
-routing/map_bike
-routing/map_car
-routing/routes
-routing/routing_results
-imgs/
+data/**
 .DS_Store
 __pycache__/
