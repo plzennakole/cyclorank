@@ -1,4 +1,15 @@
-Scripts and notebooks for [CycloRank](https://mlumiste.com//projects/cyclorank/)
+Scripts and notebooks for [CycloRank](https://mlumiste.com//projects/cyclorank/) project.
+All credits to [Mihkel Lumiste](https://mlumiste.com/) [github](https://github.com/skandium) for the original code.
+
+Current update aims to provide this cycling infrastructure ranking tool for Czechia for all cities above 10000 inhabitants and 
+for every year. 
+
+Maintained by [AutoMAT](https://automat.cz/), [Městem na kole](https://mestemnakole.cz) 
+and [Daniel Soutner](https://daniel.soutner.cz/).  
+
+![](doc/table.cs.html)
+
+![](doc/Plzeň_infra.png)
 
 ## 0. Installation
 
@@ -7,7 +18,20 @@ sudo apt install osmium-tool
 pip install osmium
 ```
 
-## 1. Get maps and data
+
+## 1. Run
+
+## 1.1 Simple run
+
+First downloading and processing script (for Czechia is about 2hrs):
+```shell
+./_run.sh
+```
+And then utilize the notebook to generate the table and plots.
+
+## 1.2 Step by step
+
+### Get maps and data
 
 Get maps and extract cities. 
 First, update desired cities in `city_conf.py` and then run:
@@ -24,7 +48,7 @@ python get_city_polygons.py
 python routing/sample_coordinates.py
 ```
 
-## 2. Distances
+### Distances
 
 set `decay=False` in `get_osmium_data.py`
 and get distances for all cities
@@ -44,7 +68,7 @@ then
 python get_decay_configs.py
 ```
 
-## 3. Final results
+### Final results
 
 ```shell
 python run_map_analysis.py
