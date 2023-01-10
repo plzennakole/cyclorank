@@ -1,13 +1,15 @@
 import json
+import os
 import pickle
 import random
-import os
+import sys
 from functools import partial
 
 import pyproj
 from shapely.geometry import Point, shape, Polygon
 from shapely.ops import transform
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from city_conf import city_mappings
 
 proj_wgs84 = pyproj.Proj('+proj=longlat +datum=WGS84')
@@ -49,14 +51,14 @@ def create_circle_around_coord(lat, lon, km):
     return circle_lats, circle_lngs, b
 
 
-def load_city_shapes(city_name):
-    with open(f"city_polygons/{city_name.lower()}_polygon.geojson") as f:
+def load_city_shapes(city_name, experiment_name=""):
+    with open(f"{experiment_name}/city_polygons/{city_name.lower()}_polygon.geojson") as f:
         city_json = json.load(f)
 
     city_polygon = city_json["geometries"][0]
     city_shape = shape(city_polygon)
 
-    with open(f"city_polygons/{city_name.lower()}.geojson") as f:
+    with open(f"{experiment_name}/city_polygons/{city_name.lower()}.geojson") as f:
         city_json = json.load(f)
 
     city_centroid_shape = shape(city_json)
@@ -82,13 +84,20 @@ def load_city_shapes(city_name):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        experiment_name = sys.argv[1]
+    else:
+        experiment_name = ""
+
+    os.makedirs(f"{experiment_name}/routing/routes", exist_ok=True)
+
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
             city_name = list(city.keys())[0]
             try:
-                if not os.path.exists(f"routing/routes/{city_name}.p"):
+                if not os.path.exists(f"{experiment_name}/routing/routes/{city_name}.p"):
                     print(city_name)
-                    shapes = load_city_shapes(city_name)
+                    shapes = load_city_shapes(city_name, experiment_name=experiment_name)
                     points = random_points_within(circle_polygon=shapes["circle_polygon"],
                                                   city_polygon=shapes["city_polygon"],
                                                   num_points=NUM_POINTS)
@@ -99,7 +108,7 @@ if __name__ == "__main__":
                         routes.append(
                             (float(start_point.y), float(start_point.x), float(end_point.y), float(end_point.x)))
 
-                    with open(f"routing/routes/{city_name}.p", "wb") as f:
+                    with open(f"{experiment_name}/routing/routes/{city_name}.p", "wb") as f:
                         pickle.dump(routes, f)
             except KeyboardInterrupt:
                 raise

@@ -1,19 +1,28 @@
-from city_conf import city_mappings
 import os
+import sys
+
+from city_conf import city_mappings
 from get_osmium_data import main
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        experiment_name = sys.argv[1]
+    else:
+        experiment_name = ""
+    os.makedirs(f"{experiment_name}/extracted_maps", exist_ok=True)
+    os.makedirs(f"{experiment_name}/results", exist_ok=True)
+
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
             city_name = list(city.keys())[0]
             try:
-                map_path = f"extracted_maps/{city_name.lower()}.pbf"
-                results_path = f"results/{city_name}_decay.json"
+                map_path = f"{experiment_name}/extracted_maps/{city_name}.pbf"
+                results_path = f"{experiment_name}/results/{city_name}_decay.json"
                 if os.path.exists(results_path):
                     print(f"Skipping {city_name}")
                 else:
                     print(f"Working on {city_name}")
-                    main(map_path, city_name, decay=True)
+                    main(map_path, city_name, decay=True, experiment_name=experiment_name)
             except KeyboardInterrupt:
                 raise
             except Exception as e:

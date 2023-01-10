@@ -9,6 +9,7 @@ import numpy as np
 import sys
 import pickle
 import json
+import os
 
 from shapely.geometry import shape, Point
 
@@ -46,7 +47,7 @@ class AmenityListHandler(o.SimpleHandler):
         self.parking_counter = 0
 
         self.decay_conf = decay_conf
-        # self.way_ids = {}
+        self.way_ids = {}
 
     def apply_weight_decay(self, road_distance, road_distance_from_centroid):
         effective_distance = np.minimum(np.maximum(road_distance_from_centroid - self.decay_conf["lower_threshold"], 0),
@@ -152,9 +153,10 @@ class AmenityListHandler(o.SimpleHandler):
                 if self.parse_tag(w, "segregated", ["yes"]):
                     segregated_track_length = cycle_track_length
 
-            # if cycle_lane_length + cycle_track_length > 0:
-            #     self.way_ids[w.id] = {"raw_distance": cycle_lane_length + cycle_track_length,
-            #                           "dist_from_centr": road_distance_from_centroid}
+            if True:
+                if cycle_lane_length + cycle_track_length > 0:
+                    self.way_ids[w.id] = {"raw_distance": cycle_lane_length + cycle_track_length,
+                                          "dist_from_centr": road_distance_from_centroid}
 
             if self.decay_conf:
                 highway_length = self.apply_weight_decay(highway_length, road_distance_from_centroid)
@@ -162,8 +164,9 @@ class AmenityListHandler(o.SimpleHandler):
                 cycle_track_length = self.apply_weight_decay(cycle_track_length, road_distance_from_centroid)
                 segregated_track_length = self.apply_weight_decay(segregated_track_length, road_distance_from_centroid)
 
-            # if cycle_lane_length + cycle_track_length > 0:
-            #     self.way_ids[w.id]["weighted_distance"] = cycle_lane_length + cycle_track_length
+            if True:
+                if cycle_lane_length + cycle_track_length > 0:
+                    self.way_ids[w.id]["weighted_distance"] = cycle_lane_length + cycle_track_length
 
             self.total_road_length += highway_length
             self.total_cycle_lane_length += cycle_lane_length
@@ -179,15 +182,15 @@ class AmenityListHandler(o.SimpleHandler):
             self.parking_counter += 1
 
 
-def main(osmfile, city_name, decay=False):
-    with open(f"city_polygons/{city_name.lower()}.geojson") as f:
+def main(osmfile, city_name, decay=False, experiment_name=""):
+    with open(f"{experiment_name}/city_polygons/{city_name.lower()}.geojson") as f:
         city_json = json.load(f)
 
     city_polygon = shape(city_json)
     city_centroid = Point((city_polygon.centroid.y, city_polygon.centroid.x))
 
     if decay:
-        with open(f"results/{city_name}_decay_conf.json", "r") as f:
+        with open(f"{experiment_name}/results/{city_name}_decay_conf.json", "r") as f:
             decay_conf = json.load(f)
             print(f"Using decay conf: {decay_conf}")
     else:
@@ -210,27 +213,31 @@ def main(osmfile, city_name, decay=False):
     print(summary)
 
     if decay:
-        with open(f"results/{city_name}_decay.json", "w") as f:
+        with open(f"{experiment_name}/results/{city_name}_decay.json", "w") as f:
             json.dump(summary, f)
     else:
-        with open(f"results/{city_name}.json", "w") as f:
+        with open(f"{experiment_name}/results/{city_name}.json", "w") as f:
             json.dump(summary, f)
 
-    with open(f"results/{city_name}_distances.pkl", "wb") as f:
+    with open(f"{experiment_name}/results/{city_name}_distances.pkl", "wb") as f:
         pickle.dump(handler.road_distances_from_centroid, f)
 
-    # with open(f"results/{city_name}_way_ids.pkl", "wb") as f:
-    #     pickle.dump(handler.way_ids, f)
+    if True:
+        with open(f"{experiment_name}/results/{city_name}_way_ids.pkl", "wb") as f:
+            pickle.dump(handler.way_ids, f)
 
     return 0
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python %s <osmfile> <city_name>" % sys.argv[0])
+    if len(sys.argv) != 4:
+        print("Usage: python %s <osmfile> <city_name> <output-dir>" % sys.argv[0])
         sys.exit(-1)
 
     osmfile = sys.argv[1]
     city_name = sys.argv[2]
+    experiment_name = sys.argv[3]
 
-    exit(main(osmfile, city_name, decay=True))
+    os.makedirs(f"{experiment_name}/results", exist_ok=True)
+
+    exit(main(osmfile, city_name, decay=False, experiment_name=experiment_name))

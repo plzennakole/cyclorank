@@ -1,8 +1,10 @@
-import numpy as np
-import pickle
 import json
 import os
+import pickle
+import sys
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 from city_conf import city_mappings
 
@@ -23,24 +25,32 @@ def derive_exponential_decay_params(dists):
     }
 
 
-for country_map in city_mappings:
-    for city in city_mappings[country_map]:
-        city_name = list(city.keys())[0]
-        if not (os.path.exists(f"results/{city_name}_distances.pkl") and os.path.exists(
-                f"results/{city_name}_decay_conf.json")):
-            print(f"{city_name} - working")
-            with open(f"results/{city_name}_distances.pkl", "rb") as f:
-                dists = pickle.load(f)
+if __name__ == "__main__":
 
-            decay_conf = derive_exponential_decay_params(dists)
-            with open(f"results/{city_name}_decay_conf.json", "w") as f:
-                json.dump(decay_conf, f)
+    if len(sys.argv) > 1:
+        experiment_name = sys.argv[1]
+    else:
+        experiment_name = ""
+    os.makedirs(f"{experiment_name}/results", exist_ok=True)
 
-            plt.hist(dists, bins=100)
-            plt.axvline(x=decay_conf["lower_threshold"], color="red")
-            plt.axvline(x=decay_conf["upper_threshold"], color="red")
-            plt.title(city_name)
-            plt.savefig(f"results/{city_name}_distance_plot.png")
-            plt.close()
-        else:
-            print(f"{city_name} - skipped")
+    for country_map in city_mappings:
+        for city in city_mappings[country_map]:
+            city_name = list(city.keys())[0]
+            if not (os.path.exists(f"{experiment_name}/results/{city_name}_distances.pkl") and os.path.exists(
+                    f"{experiment_name}/results/{city_name}_decay_conf.json")):
+                print(f"{city_name} - working")
+                with open(f"{experiment_name}/results/{city_name}_distances.pkl", "rb") as f:
+                    dists = pickle.load(f)
+
+                decay_conf = derive_exponential_decay_params(dists)
+                with open(f"{experiment_name}/results/{city_name}_decay_conf.json", "w") as f:
+                    json.dump(decay_conf, f)
+
+                plt.hist(dists, bins=100)
+                plt.axvline(x=decay_conf["lower_threshold"], color="red")
+                plt.axvline(x=decay_conf["upper_threshold"], color="red")
+                plt.title(city_name)
+                plt.savefig(f"{experiment_name}/results/{city_name}_distance_plot.png")
+                plt.close()
+            else:
+                print(f"{city_name} - skipped")

@@ -1,56 +1,66 @@
-import subprocess
 import os
+import subprocess
+import sys
+
 from city_conf import city_mappings as country_to_cities
 
 GEOFABRIK_ROOT_PATH = "https://download.geofabrik.de/"
 
 
-def download_map(geofabrik_path):
+def download_map(geofabrik_path, experiment_name=""):
     full_path = GEOFABRIK_ROOT_PATH + geofabrik_path
-    subprocess.run(["wget", "-P", "full_maps", full_path])
+    subprocess.run(["wget", "-P", f"{experiment_name}/full_maps", full_path])
     filename = geofabrik_path.split("/")[-1]
     return filename
 
 
-def extract_map(city_name, relation_id, full_map_path):
+def extract_map(city_name, relation_id, full_map_path, experiment_name=""):
     print(f"Working on map for {city_name} - id {relation_id}")
     print("Extracting boundary")
-    subprocess.run(
-        f"docker run -it -w /wkd -v $(pwd):/wkd osmium-caller:latest osmium getid -r -t full_maps/{full_map_path} r{relation_id} -o extracted_maps/{city_name}_boundary.pbf",
+    subprocess.run(f"osmium getid -r -t {experiment_name}/full_maps/{full_map_path} r{relation_id} -o {experiment_name}/extracted_maps/{city_name}_boundary.pbf",
         shell=True)
     print("Extracting city")
-    subprocess.run(
-        f"docker run -it -w /wkd -v $(pwd):/wkd osmium-caller:latest osmium extract -p extracted_maps/{city_name}_boundary.pbf full_maps/{full_map_path} -o extracted_maps/{city_name}.pbf",
+    subprocess.run(f"osmium extract -p {experiment_name}/extracted_maps/{city_name}_boundary.pbf "
+                   f"{experiment_name}/full_maps/{full_map_path} -o {experiment_name}/extracted_maps/{city_name}.pbf",
         shell=True)
 
-    if os.path.exists(f"extracted_maps/{city_name}.pbf"):
+    if os.path.exists(f"{experiment_name}/extracted_maps/{city_name}.pbf"):
         print("Removing boundary file")
-        subprocess.run(f"rm extracted_maps/{city_name}_boundary.pbf", shell=True)
+        subprocess.run(f"rm {experiment_name}/extracted_maps/{city_name}_boundary.pbf", shell=True)
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        experiment_name = sys.argv[1]
+    else:
+        experiment_name = ""
+    os.makedirs(f"{experiment_name}/full_maps", exist_ok=True)
+    os.makedirs(f"{experiment_name}/extracted_maps", exist_ok=True)
+
     for country_map in country_to_cities:
         try:
             missing_cities = []
             for city in country_to_cities[country_map]:
                 city_name = list(city.keys())[0]
 
-                if not os.path.exists(f"extracted_maps/{city_name}.pbf"):
+                if not os.path.exists(f"{experiment_name}/extracted_maps/{city_name}.pbf"):
                     missing_cities.append(city)
 
             if missing_cities:
                 print(f"Map: {country_map}")
                 print(f"Missing cities: {missing_cities}")
-                # full_map_path = download_map(country_map)
                 full_map_path = country_map.split("/")[-1]
+                if not os.path.exists(f"{experiment_name}/full_maps/{full_map_path}"):
+                    full_map_path = download_map(country_map, experiment_name=experiment_name)
 
                 for missing_city in missing_cities:
                     for missing_city_name in missing_city:
                         osm_id = missing_city[missing_city_name]["osm_id"]
-                        extract_map(missing_city_name, osm_id, full_map_path=full_map_path)
+                        extract_map(missing_city_name, osm_id, full_map_path=full_map_path, experiment_name=experiment_name)
 
-                # print("Removing country map")
-                # subprocess.run(f"rm full_maps/{full_map_path}", shell=True)
+                print("Removing country map")
+                if "czech" not in full_map_path.lower():
+                    subprocess.run(f"rm {experiment_name}/full_maps/{full_map_path}", shell=True)
         except KeyboardInterrupt:
             raise
         except Exception as e:
