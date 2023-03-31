@@ -1,11 +1,10 @@
 import os
 import subprocess
 import sys
+import json
 
-from city_conf import city_mappings as country_to_cities
-
+country_to_cities = json.load(open("city_conf_czechia.json"))
 GEOFABRIK_ROOT_PATH = "https://download.geofabrik.de/"
-
 
 def download_map(geofabrik_path, experiment_name=""):
     full_path = GEOFABRIK_ROOT_PATH + geofabrik_path
