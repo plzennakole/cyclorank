@@ -35,22 +35,29 @@ if __name__ == "__main__":
 
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
-            city_name = list(city.keys())[0]
-            if not (os.path.exists(f"{experiment_name}/results/{city_name}_distances.pkl") and os.path.exists(
-                    f"{experiment_name}/results/{city_name}_decay_conf.json")):
-                print(f"{city_name} - working")
-                with open(f"{experiment_name}/results/{city_name}_distances.pkl", "rb") as f:
-                    dists = pickle.load(f)
 
-                decay_conf = derive_exponential_decay_params(dists)
-                with open(f"{experiment_name}/results/{city_name}_decay_conf.json", "w") as f:
-                    json.dump(decay_conf, f)
+            try:
+                city_name = list(city.keys())[0]
+                if not (os.path.exists(f"{experiment_name}/results/{city_name}_distances.pkl") and os.path.exists(
+                        f"{experiment_name}/results/{city_name}_decay_conf.json")):
+                    print(f"{city_name} - working")
+                    with open(f"{experiment_name}/results/{city_name}_distances.pkl", "rb") as f:
+                        dists = pickle.load(f)
 
-                plt.hist(dists, bins=100)
-                plt.axvline(x=decay_conf["lower_threshold"], color="red")
-                plt.axvline(x=decay_conf["upper_threshold"], color="red")
-                plt.title(city_name)
-                plt.savefig(f"{experiment_name}/results/{city_name}_distance_plot.png")
-                plt.close()
-            else:
-                print(f"{city_name} - skipped")
+                    decay_conf = derive_exponential_decay_params(dists)
+                    with open(f"{experiment_name}/results/{city_name}_decay_conf.json", "w") as f:
+                        json.dump(decay_conf, f)
+
+                    plt.hist(dists, bins=100)
+                    plt.axvline(x=decay_conf["lower_threshold"], color="red")
+                    plt.axvline(x=decay_conf["upper_threshold"], color="red")
+                    plt.title(city_name)
+                    plt.savefig(f"{experiment_name}/results/{city_name}_distance_plot.png")
+                    plt.close()
+                else:
+                    print(f"{city_name} - skipped")
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                print(e)
+                continue
