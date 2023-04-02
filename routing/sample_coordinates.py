@@ -9,9 +9,6 @@ import pyproj
 from shapely.geometry import Point, shape, Polygon
 from shapely.ops import transform
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from city_conf import city_mappings
-
 proj_wgs84 = pyproj.Proj('+proj=longlat +datum=WGS84')
 
 NUM_POINTS = 1000
@@ -86,8 +83,11 @@ def load_city_shapes(city_name, experiment_name=""):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         experiment_name = sys.argv[1]
+        config_path = sys.argv[2]
+        city_mappings = json.load(open(config_path))
     else:
         experiment_name = ""
+        city_mappings = json.load(open("city_conf_czechia.json"))
 
     os.makedirs(f"{experiment_name}/routing/routes", exist_ok=True)
 

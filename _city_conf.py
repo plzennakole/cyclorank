@@ -12,7 +12,6 @@ city_mappings = {
         {'Prague': {'osm_id': 439840, 'centre': (50.086992667187516, 14.418457183135766)}},
         {'Brno': {'osm_id': 438171, 'centre': (49.1922443, 16.6113382)}},
         {'Plzen': {'osm_id': 438344, 'centre': (49.7492219, 13.3746469)}}
-        # 439482#map=12/50.2170/12.8643 Karlovy Vary
         ],
     'europe/denmark-latest.osm.pbf': [
         {'Copenhagen': {'osm_id': 2192363, 'centre': (55.679696094655284, 12.578663845602179)}},

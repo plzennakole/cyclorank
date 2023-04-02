@@ -5,13 +5,14 @@ import time
 
 import requests
 
-from city_conf import city_mappings
-
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         experiment_name = sys.argv[1]
+        config_path = sys.argv[2]
+        city_mappings = json.load(open(config_path))
     else:
         experiment_name = ""
+        city_mappings = json.load(open("city_conf_czechia.json"))
     os.makedirs(f"{experiment_name}/city_polygons", exist_ok=True)
 
     for country_map in city_mappings:

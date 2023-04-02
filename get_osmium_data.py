@@ -175,7 +175,8 @@ class AmenityListHandler(o.SimpleHandler):
             self.total_cycling_road_length += cycle_lane_length + cycle_track_length
 
     def parse_way_data(self, w):
-        """Based on https://wiki.openstreetmap.org/wiki/Bicycle"""
+        """CZE version 1.0
+            Based on https://wiki.openstreetmap.org/wiki/Bicycle"""
         if "highway" in w.tags:
 
             highway_length = o.geom.haversine_distance(w.nodes)
