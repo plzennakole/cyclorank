@@ -175,13 +175,13 @@ if __name__ == "__main__":
 
     final.sort_values("Rank", ascending=True)
 
-    with open("table.cs.html", "wt") as fout:
+    with open(f"{experiment_name}/table.cs.html", "wt") as fout:
         fout.write(final.sort_values("Rank", ascending=True).to_html(index=False))
 
     # write to CSV table
-    final.sort_values("Rank", ascending=True).to_csv("table.cs.csv", index=False)
+    final.sort_values("Rank", ascending=True).to_csv(f"{experiment_name}/table.cs.csv", index=False)
 
     html = generate_html(final.sort_values("Rank", ascending=True))
     # write the HTML content to an HTML file
-    with open("table.cs.sortable.html", "wt") as fout:
+    with open(f"{experiment_name}/table.cs.sortable.html", "wt") as fout:
         fout.write(html)
