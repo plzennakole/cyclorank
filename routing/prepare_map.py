@@ -1,9 +1,6 @@
 import subprocess
 from shutil import copyfile
 
-# from city_conf import city_mappings
-
-
 def prepare_maps(city_name):
     copyfile(f"../extracted_maps/{city_name}.pbf", f"map_car/{city_name}.pbf")
     copyfile(f"../extracted_maps/{city_name}.pbf", f"map_bike/{city_name}.pbf")
