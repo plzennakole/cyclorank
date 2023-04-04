@@ -191,7 +191,7 @@ class AmenityListHandler(o.SimpleHandler):
             cycle_track_length = 0
             segregated_track_length = 0
 
-            # Discount oneways
+            # Discount one-ways
             if self.parse_tag(w, "oneway", ["yes"]):
                 highway_length = 0.5 * highway_length
 
@@ -248,11 +248,11 @@ class AmenityListHandler(o.SimpleHandler):
                     (self.parse_tag(w, "cycleway:left", ["track", "opposite_track"])) or
                     (self.parse_tag(w, "cycleway:right", ["track", "opposite_track"])) or
                     (self.parse_tag(w, "highway", ["cycleway"])) or
-                    (self.parse_tag(w, "highway", ["path", "footway"]) and
-                     self.parse_tag(w, "bicycle", ["designated"]) and self.parse_tag(w, "bicycle", ["yes"])) or
+                    (self.parse_tag(w, "highway", ["path", "footway"]) and  # highway=path is not always a cycleway
+                        (self.parse_tag(w, "bicycle", ["designated"]) and self.parse_tag(w, "bicycle", ["yes"]))) or
                     (self.parse_tag(w, "cyclestreet", ["yes"])) or
                     (self.parse_tag(w, "bicycle_road", ["yes"])) or
-                    (self.parse_tag(w, "highway", ["pedastrian"]) and self.parse_tag(w, "bicycle", ["yes"]))
+                    (self.parse_tag(w, "highway", ["pedestrian"]) and self.parse_tag(w, "bicycle", ["yes"]))
             ):
                 # Discount oneways
                 if (
