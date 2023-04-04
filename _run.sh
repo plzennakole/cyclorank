@@ -89,3 +89,8 @@ if [ $STAGE -le 6 ]; then
     echo "Stage 6: Convert results to tables"
     python results_to_csv.py "$EXP_NAME" "$CITY_CONF"
 fi
+
+if [ $STAGE -le 7 ]; then
+    echo "Stage 7: Droaw and save maps"
+    python draw_maps.py "$EXP_NAME" "$CITY_CONF"
+fi
