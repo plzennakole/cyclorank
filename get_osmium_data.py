@@ -252,7 +252,14 @@ class AmenityListHandler(o.SimpleHandler):
                         (self.parse_tag(w, "bicycle", ["designated"]) and self.parse_tag(w, "bicycle", ["yes"]))) or
                     (self.parse_tag(w, "cyclestreet", ["yes"])) or
                     (self.parse_tag(w, "bicycle_road", ["yes"])) or
-                    (self.parse_tag(w, "highway", ["pedestrian"]) and self.parse_tag(w, "bicycle", ["yes"]))
+                    (self.parse_tag(w, "highway", ["pedestrian"]) and self.parse_tag(w, "bicycle", ["yes"])) or
+                    (self.parse_tag(w, "highway", ['pedestrian']) and self.parse_tag(w, 'bicycle', ["designated"])) or
+                    # highway = footway and bicycle = yes
+                    (self.parse_tag(w, "highway", ["footway"]) and self.parse_tag(w, "bicycle", ["yes"])) or
+                    # oneway = yes and oneway:bicycle = no
+                    (self.parse_tag(w, "oneway", ["yes"]) and self.parse_tag(w, "oneway:bicycle", ["no"])) or
+                    # highway = footway and bicycle = designated
+                    (self.parse_tag(w, "highway", ["footway"]) and self.parse_tag(w, "bicycle", ["designated"]))
             ):
                 # Discount oneways
                 if (
