@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # default params
-EXP_NAME="2014-01-01"
+EXP_NAME="data/2023-06-27"
 STAGE=1
 CITY_CONF="city_conf_czechia.json"
 

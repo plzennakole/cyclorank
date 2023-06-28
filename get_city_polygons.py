@@ -23,7 +23,14 @@ if __name__ == "__main__":
                 # Get city polygon
                 if not os.path.exists(f"{experiment_name}/city_polygons/{city_name.lower()}_polygon.geojson"):
                     city_osm_id = city[city_name]["osm_id"]
+
+                    # hack - first regenerate on server, next call failed if not done this before
+                    r = requests.get(f"https://polygons.openstreetmap.fr/?id={city_osm_id}")
+                    time.sleep(2)
+
                     r = requests.get(f"http://polygons.openstreetmap.fr/get_geojson.py?id={city_osm_id}&params=0")
+
+                    print(r.status_code, r.reason)
                     city_geojson = r.json()
                     time.sleep(3)  # Have mercy on endpoint
 
