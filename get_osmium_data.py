@@ -261,9 +261,7 @@ class AmenityListHandler(o.SimpleHandler):
                     # highway = footway and bicycle = designated
                     (self.parse_tag(w, "highway", ["footway"]) and self.parse_tag(w, "bicycle", ["designated"])) or
                     # highway=service + bicycle=yes
-                    (self.parse_tag(w, "highway", ["service"]) and self.parse_tag(w, "bicycle", ["yes"])) or
-                    # highway=track + bicycle=yes
-                    (self.parse_tag(w, "highway", ["track"]) and self.parse_tag(w, "bicycle", ["yes"]))
+                    (self.parse_tag(w, "highway", ["service"]) and self.parse_tag(w, "bicycle", ["yes"])) 
             ):
                 # Discount oneways
                 if (
