@@ -148,6 +148,9 @@ if __name__ == "__main__":
          "area_km2",
          "total_road_length",
          "total_cycling_road_length",
+         "total_cycle_track_length",
+         "total_cycle_lane_length",
+         "total_segregated_cycle_track_length",
          "cycle_road_share",
          "cycle_track_share",
          "cycle_lane_share",
@@ -162,6 +165,9 @@ if __name__ == "__main__":
         "area_km2": "Area (km2)",
         "total_road_length": "Navigable road length (km)",
         "total_cycling_road_length": "Navigable bike road length (km)",
+        "total_cycle_track_length": "Cycle track length (km)",
+        "total_cycle_lane_length": "Cycle lane length (km)",
+        "total_segregated_cycle_track_length": "Segregated cycle track length (km)",
         "cycle_road_share": "Cycle road share",
         "cycle_track_share": "Cycle track share",
         "cycle_lane_share": "Cycle lane share",
@@ -175,13 +181,13 @@ if __name__ == "__main__":
 
     final.sort_values("Rank", ascending=True)
 
-    with open(f"{experiment_name}/table.cs.html", "wt") as fout:
+    with open(f"{experiment_name}/_table.cs.html", "wt") as fout:
         fout.write(final.sort_values("Rank", ascending=True).to_html(index=False))
 
     # write to CSV table
-    final.sort_values("Rank", ascending=True).to_csv(f"{experiment_name}/table.cs.csv", index=False)
+    final.sort_values("Rank", ascending=True).to_csv(f"{experiment_name}/_table.cs.csv", index=False)
 
     html = generate_html(final.sort_values("Rank", ascending=True))
     # write the HTML content to an HTML file
-    with open(f"{experiment_name}/table.cs.sortable.html", "wt") as fout:
+    with open(f"{experiment_name}/_table.cs.sortable.html", "wt") as fout:
         fout.write(html)

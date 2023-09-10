@@ -216,7 +216,7 @@ class AmenityListHandler(o.SimpleHandler):
                                     ["share_busway", "opposite_share_busway", "shoulder", "shared_lane"])) or
                     (self.parse_tag(w, "cycleway:both",
                                     ["share_busway", "opposite_share_busway", "shoulder", "shared_lane"])) or
-                    # Sidewalks with explicit cycling
+                    # Sidewalks with explicit cycling, weight = 0.5
                     (self.parse_tag(w, "sidewalk:both:bicycle", ["designated", "yes"])) or
                     (self.parse_tag(w, "sidewalk:left:bicycle", ["designated", "yes"])) or
                     (self.parse_tag(w, "sidewalk:right:bicycle", ["designated", "yes"])) or
@@ -241,6 +241,24 @@ class AmenityListHandler(o.SimpleHandler):
                 if self.parse_tag(w, "cycleway", ["share_busway", "opposite_share_busway"]):
                     cycle_lane_length = cycle_lane_length * 0.2
 
+                # Sidewalks with explicit cycling, weight = 0.5
+                if (
+                        (self.parse_tag(w, "sidewalk:both:bicycle", ["designated", "yes"])) or
+                        (self.parse_tag(w, "sidewalk:left:bicycle", ["designated", "yes"])) or
+                        (self.parse_tag(w, "sidewalk:right:bicycle", ["designated", "yes"])) or
+                        (self.parse_tag(w, "sidewalk:bicycle", ["designated", "yes"]))
+                ):
+                    cycle_lane_length = cycle_lane_length * 0.5
+                   
+                # If soft_lane, weight it 0.5
+                if (
+                        (self.parse_tag(w, "cycleway", ["soft_lane"])) or
+                        (self.parse_tag(w, "cycleway:right", ["soft_lane"])) or
+                        (self.parse_tag(w, "cycleway:left", ["soft_lane"])) or
+                        (self.parse_tag(w, "cycleway:both", ["soft_lane"]))
+                ):
+                    cycle_lane_length = cycle_lane_length * 0.5
+
             # Cycle tracks
             if (
                     (self.parse_tag(w, "cycleway", ["track", "opposite_track"])) or
@@ -254,7 +272,7 @@ class AmenityListHandler(o.SimpleHandler):
                     (self.parse_tag(w, "bicycle_road", ["yes"])) or
                     (self.parse_tag(w, "highway", ["pedestrian"]) and self.parse_tag(w, "bicycle", ["yes"])) or
                     (self.parse_tag(w, "highway", ['pedestrian']) and self.parse_tag(w, 'bicycle', ["designated"])) or
-                    # highway = footway and bicycle = yes
+                    # highway = footway and bicycle = yes, weight = 0.5
                     (self.parse_tag(w, "highway", ["footway"]) and self.parse_tag(w, "bicycle", ["yes"])) or
                     # oneway = yes and oneway:bicycle = no
                     (self.parse_tag(w, "oneway", ["yes"]) and self.parse_tag(w, "oneway:bicycle", ["no"])) or
@@ -273,6 +291,10 @@ class AmenityListHandler(o.SimpleHandler):
                     cycle_track_length = 0.5 * highway_length
                 else:
                     cycle_track_length = highway_length
+
+                # highway = footway and bicycle = yes, weight = 0.5
+                if self.parse_tag(w, "highway", ["footway"]) and self.parse_tag(w, "bicycle", ["yes"]):
+                    cycle_track_length = cycle_track_length * 0.5
 
                 if self.parse_tag(w, "segregated", ["yes"]):
                     segregated_track_length = cycle_track_length
