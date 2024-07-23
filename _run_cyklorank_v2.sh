@@ -84,5 +84,6 @@ fi
 
 if [ $STAGE -le 7 ]; then
     echo "Stage 7: Draw and save maps"
-    python draw_maps.py "$EXP_NAME" "$CITY_CONF"
+    python draw_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
+    python draw_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
 fi
