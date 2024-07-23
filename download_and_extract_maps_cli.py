@@ -30,6 +30,7 @@ def extract_map(city_name, relation_id, full_map_path, experiment_name="exp"):
     if os.path.exists(f"{experiment_name}/extracted_maps/{city_name}.pbf"):
         logger.info("Removing boundary file")
         subprocess.run(f"rm {experiment_name}/extracted_maps/{city_name}_boundary.pbf", shell=True)
+        os.remove(f"{experiment_name}/extracted_maps/{city_name}_boundary.pbf")
 
 
 def main(country_to_cities: dict, experiment_name: str = "exp", remove_country_map=False):
@@ -57,11 +58,16 @@ def main(country_to_cities: dict, experiment_name: str = "exp", remove_country_m
 
                 if remove_country_map:
                     logger.warning("Removing country map")
-                    subprocess.run(f"rm {experiment_name}/full_maps/{full_map_path}", shell=True)
+                    os.remove(f"{experiment_name}/full_maps/{full_map_path}")
 
         # TODO: add more specific exceptions
         except KeyboardInterrupt:
-            raise
+            # remove the country map if it was downloaded
+            # check if exist full_map_path variable
+            if "full_map_path" in locals():
+                if os.path.exists(f"{experiment_name}/full_maps/{full_map_path}"):
+                    os.remove(f"{experiment_name}/full_maps/{full_map_path}")
+            raise KeyboardInterrupt
         except Exception as e:
             print(e)
             continue
