@@ -381,24 +381,22 @@ def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp"):
         with open(f"{experiment_name}/results/{city_name}_way_ids.pkl", "wb") as f:
             pickle.dump(handler.way_ids, f)
 
+    return summary
+
 def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
 
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
             city_name = list(city.keys())[0]
             try:
-                osm_for_one_city(f"{experiment_name}/extracted_maps/{city_name}.pbf", city_name, decay=decay, experiment_name=experiment_name)
+                osm_file = f"{experiment_name}/extracted_maps/{city_name}.pbf"
+                osm_for_one_city(osm_file, city_name, decay=decay, experiment_name=experiment_name)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
                 logger.error(e)
                 continue
 
-    osmfile = sys.argv[1]
-    city_name = sys.argv[2]
-    experiment_name = sys.argv[3]
-
-    exit(main(osmfile, city_name, decay=False, experiment_name=experiment_name))
 
 
 if __name__ == "__main__":

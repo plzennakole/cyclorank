@@ -43,12 +43,10 @@ done
 echo "STAGE             = ${STAGE}"
 echo "EXP_NAME          = $EXP_NAME"
 
-mkdir -p data/"$EXP_NAME"/extracted_maps
-
 if [ $STAGE -le 1 ]; then
     echo "Stage 1: Downloading and extracting maps"
-    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
-    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
+    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" --remove_country_map false
+    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json" --remove_country_map false
 fi
 
 if [ $STAGE -le 2 ]; then
@@ -61,20 +59,9 @@ if [ $STAGE -le 2 ]; then
     python routing/sample_coordinates.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
 fi
 
-exit 0
-
 if [ $STAGE -le 3 ]; then
     echo "Stage 3: Getting distances for all cities"
-    ## 3. Distances
-    # get distances for all cities
-    # python get_osmium_data_cli.py extracted_maps/Vienna.pbf Vienna
-
-    # for all cities
-    for i in $EXP_NAME/extracted_maps/*.pbf; do
-        city=$(basename $i .pbf)
-        echo $city
-        python get_osmium_data.py $i $city "$EXP_NAME"
-    done
+    python get_osmium_data_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
 fi
 
 if [ $STAGE -le 4 ]; then

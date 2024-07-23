@@ -72,6 +72,7 @@ if __name__ == "__main__":
     parser.add_argument("--experiment_name", type=str, default="exp")
     parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
     parser.add_argument("--log_level", type=str, default="INFO")
+    parser.add_argument("--remove_country_map", type=bool, default=True)
     args = parser.parse_args()
 
     logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
@@ -80,4 +81,4 @@ if __name__ == "__main__":
     os.makedirs(f"{args.experiment_name}/full_maps", exist_ok=True)
     os.makedirs(f"{args.experiment_name}/extracted_maps", exist_ok=True)
 
-    main(city_mappings, args.experiment_name)
+    main(city_mappings, args.experiment_name, args.remove_country_map)
