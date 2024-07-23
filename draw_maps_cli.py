@@ -1,22 +1,16 @@
+import argparse
 import json
+import logging
 import pickle
-import sys
 
 import matplotlib.pyplot as plt
 import tqdm
 from pyrosm import OSM
 
-if __name__ == "__main__":
+logger = logging.getLogger(__name__)
 
-    if len(sys.argv) > 1:
-        experiment_name = sys.argv[1]
-        config_path = sys.argv[2]
-        city_mappings = json.load(open(config_path))
-    else:
-        osm_city = "Plzeň"
-        experiment_name = "data/2014-01-01/"
-        city_mappings = json.load(open("config/city_conf_czechia.json"))
 
+def main(experiment_name: str, city_mappings: dict):
     exp_date = experiment_name.split("/")[-2] if experiment_name.endswith("/") else experiment_name.split("/")[-1]
 
     for country_map in city_mappings:
@@ -57,6 +51,7 @@ if __name__ == "__main__":
             except Exception as e:
                 print(e)
 
+            # TODO: fix this
             continue
 
             # Convert the network to a NetworkX graph
@@ -75,3 +70,17 @@ if __name__ == "__main__":
             ax.set_xlabel("Degree")
             ax.set_ylabel("Count")
             plt.show()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--experiment_name", type=str, default="exp")
+    parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
+    parser.add_argument("--log_level", type=str, default="INFO")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
+
+    city_mappings = json.load(open(args.config_path))
+
+    main(args.experiment_name, city_mappings)

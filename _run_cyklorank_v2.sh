@@ -79,7 +79,7 @@ fi
 
 if [ $STAGE -le 6 ]; then
     echo "Stage 6: Convert results to tables"
-    python results_to_csv.py "$EXP_NAME" "$CITY_CONF"
+    python results_to_csv_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" "config/city_conf_europe.json"
 fi
 
 if [ $STAGE -le 7 ]; then
