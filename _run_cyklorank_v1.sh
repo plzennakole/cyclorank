@@ -65,7 +65,7 @@ if [ $STAGE -le 3 ]; then
     echo "Stage 3: Getting distances for all cities"
     ## 3. Distances
     # get distances for all cities
-    # python get_osmium_data.py extracted_maps/Vienna.pbf Vienna
+    # python get_osmium_data_cli.py extracted_maps/Vienna.pbf Vienna
 
     # for all cities
     for i in $EXP_NAME/extracted_maps/*.pbf; do

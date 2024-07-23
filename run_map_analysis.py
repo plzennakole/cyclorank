@@ -2,7 +2,7 @@ import os
 import sys
 import json
 
-from get_osmium_data import main
+from get_osmium_data_cli import main
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

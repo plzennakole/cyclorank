@@ -53,9 +53,12 @@ fi
 
 if [ $STAGE -le 2 ]; then
     echo "Stage 2: Getting city polygons and sample coordinates"
-    # Get city polygons
+    # Get city polygons for Czechia
     python get_city_polygons_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
-    python routing/sample_coordinates.py ${EXP_NAME} ${CITY_CONF}
+    python routing/sample_coordinates.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
+    # Get city polygons for Europe
+    python get_city_polygons_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
+    python routing/sample_coordinates.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
 fi
 
 exit 0
@@ -64,7 +67,7 @@ if [ $STAGE -le 3 ]; then
     echo "Stage 3: Getting distances for all cities"
     ## 3. Distances
     # get distances for all cities
-    # python get_osmium_data.py extracted_maps/Vienna.pbf Vienna
+    # python get_osmium_data_cli.py extracted_maps/Vienna.pbf Vienna
 
     # for all cities
     for i in $EXP_NAME/extracted_maps/*.pbf; do

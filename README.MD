@@ -53,13 +53,13 @@ python routing/sample_coordinates.py
 set `decay=False` in `get_osmium_data.py`
 and get distances for all cities
 ```shell
-python get_osmium_data.py extracted_maps/Vienna.pbf Vienna
+python get_osmium_data_cli.py extracted_maps/Vienna.pbf Vienna
 
 # for all cities
 for i in extracted_maps/*.pbf; do
     city=$(basename $i .pbf)
     echo $city
-    python get_osmium_data.py $i $city
+    python get_osmium_data_cli.py $i $city
 done
 ```
 

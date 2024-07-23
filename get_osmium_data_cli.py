@@ -10,9 +10,12 @@ import sys
 import pickle
 import json
 import os
+import logging
+import argparse
 
 from shapely.geometry import shape, Point
 
+logger = logging.getLogger(__name__)
 
 def haversine(lat1, lon1, lat2, lon2):
     """
@@ -334,7 +337,7 @@ class AmenityListHandler(o.SimpleHandler):
             self.parking_counter += 1
 
 
-def main(osmfile, city_name, decay=False, experiment_name=""):
+def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp"):
     with open(f"{experiment_name}/city_polygons/{city_name.lower()}.geojson") as f:
         city_json = json.load(f)
 
@@ -344,7 +347,7 @@ def main(osmfile, city_name, decay=False, experiment_name=""):
     if decay:
         with open(f"{experiment_name}/results/{city_name}_decay_conf.json", "r") as f:
             decay_conf = json.load(f)
-            print(f"Using decay conf: {decay_conf}")
+            logger.info(f"Using decay conf: {decay_conf}")
     else:
         decay_conf = None
 
@@ -362,7 +365,7 @@ def main(osmfile, city_name, decay=False, experiment_name=""):
         "parking_counter": handler.parking_counter
     }
 
-    print(summary)
+    logger.info(summary)
 
     if decay:
         with open(f"{experiment_name}/results/{city_name}_decay.json", "w") as f:
@@ -378,18 +381,37 @@ def main(osmfile, city_name, decay=False, experiment_name=""):
         with open(f"{experiment_name}/results/{city_name}_way_ids.pkl", "wb") as f:
             pickle.dump(handler.way_ids, f)
 
-    return 0
+def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
 
-
-if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: python %s <osmfile> <city_name> <output-dir>" % sys.argv[0])
-        sys.exit(-1)
+    for country_map in city_mappings:
+        for city in city_mappings[country_map]:
+            city_name = list(city.keys())[0]
+            try:
+                osm_for_one_city(f"{experiment_name}/extracted_maps/{city_name}.pbf", city_name, decay=decay, experiment_name=experiment_name)
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                logger.error(e)
+                continue
 
     osmfile = sys.argv[1]
     city_name = sys.argv[2]
     experiment_name = sys.argv[3]
 
-    os.makedirs(f"{experiment_name}/results", exist_ok=True)
-
     exit(main(osmfile, city_name, decay=False, experiment_name=experiment_name))
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--experiment_name", type=str, default="exp")
+    parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
+    parser.add_argument("--log_level", type=str, default="INFO")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
+
+    city_mappings = json.load(open(args.config_path))
+    os.makedirs(f"{args.experiment_name}/results", exist_ok=True)
+
+    main(city_mappings, args.experiment_name, decay=False)
