@@ -16,7 +16,7 @@ def download_map(geofabrik_path: str, experiment_name: str = "exp") -> str:
     return filename
 
 
-def extract_map(city_name, relation_id, full_map_path, experiment_name=""):
+def extract_map(city_name, relation_id, full_map_path, experiment_name="exp"):
     logger.info(f"Working on map for {city_name} - id {relation_id}")
     logger.info("Extracting boundary")
     subprocess.run(
@@ -32,7 +32,7 @@ def extract_map(city_name, relation_id, full_map_path, experiment_name=""):
         subprocess.run(f"rm {experiment_name}/extracted_maps/{city_name}_boundary.pbf", shell=True)
 
 
-def main(country_to_cities: dict, experiment_name: str = "exp", remove_country_map=True):
+def main(country_to_cities: dict, experiment_name: str = "exp", remove_country_map=False):
     for country_map in country_to_cities:
         try:
             missing_cities = []
@@ -55,8 +55,8 @@ def main(country_to_cities: dict, experiment_name: str = "exp", remove_country_m
                         extract_map(missing_city_name, osm_id, full_map_path=full_map_path,
                                     experiment_name=experiment_name)
 
-                logger.warning("Removing country map")
-                if "czech" not in full_map_path.lower() and remove_country_map:
+                if remove_country_map:
+                    logger.warning("Removing country map")
                     subprocess.run(f"rm {experiment_name}/full_maps/{full_map_path}", shell=True)
 
         # TODO: add more specific exceptions
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     parser.add_argument("--experiment_name", type=str, default="exp")
     parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
     parser.add_argument("--log_level", type=str, default="INFO")
-    parser.add_argument("--remove_country_map", type=bool, default=True)
+    parser.add_argument("--remove_country_map", action="store_true")
     args = parser.parse_args()
 
     logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")

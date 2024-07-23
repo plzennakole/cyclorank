@@ -45,8 +45,8 @@ echo "EXP_NAME          = $EXP_NAME"
 
 if [ $STAGE -le 1 ]; then
     echo "Stage 1: Downloading and extracting maps"
-    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" --remove_country_map false
-    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json" --remove_country_map false
+    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
+    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
 fi
 
 if [ $STAGE -le 2 ]; then

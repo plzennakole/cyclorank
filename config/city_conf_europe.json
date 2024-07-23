@@ -1,6 +1,6 @@
 {
     "europe/austria-latest.osm.pbf": [{"Vienna": {"osm_id": 109166, "centre": [48.2083537, 16.3725042]}},
-                                      {"Linz":  {"osm_id": 357812,  "centre":  [48.3069, 14.2858]}}],
+                                      {"Linz":  {"osm_id": 86708,  "centre":  [48.3069, 14.2858]}}],
     "europe/belgium-latest.osm.pbf": [{"Brussels": {"osm_id": 2404020, "centre": [50.83879505, 4.375304132256188]}},
                                       {"Antwerp": {"osm_id": 59518, "centre": [51.2602708, 4.382181448976495]}}],
     "europe/bulgaria-latest.osm.pbf": [{"Sofia": {"osm_id": 4283101, "centre": [42.6978634, 23.3221789]}},
