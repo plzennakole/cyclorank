@@ -383,8 +383,8 @@ def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp"):
 
     return summary
 
-def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
 
+def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
             city_name = list(city.keys())[0]

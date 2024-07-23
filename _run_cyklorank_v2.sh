@@ -62,16 +62,19 @@ fi
 if [ $STAGE -le 3 ]; then
     echo "Stage 3: Getting distances for all cities"
     python get_osmium_data_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
+    python get_osmium_data_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
 fi
 
 if [ $STAGE -le 4 ]; then
     echo "Stage 4: Getting decay configs"
-    python get_decay_configs.py "$EXP_NAME" "$CITY_CONF"
+    python get_decay_configs_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
+    python get_decay_configs_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
 fi
 
 if [ $STAGE -le 5 ]; then
     echo "Stage 5: Final results"
-    python run_map_analysis.py "$EXP_NAME" "$CITY_CONF"
+    python run_map_analysis_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json"
+    python run_map_analysis_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json"
 fi
 
 if [ $STAGE -le 6 ]; then

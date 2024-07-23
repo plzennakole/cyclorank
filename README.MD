@@ -65,11 +65,11 @@ done
 
 then
 ```shell
-python get_decay_configs.py
+python get_decay_configs_cli.py
 ```
 
 ### Final results
 
 ```shell
-python run_map_analysis.py
+python run_map_analysis_cli.py
 ```

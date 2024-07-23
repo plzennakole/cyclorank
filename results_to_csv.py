@@ -1,5 +1,6 @@
+import argparse
 import json
-import sys
+import logging
 from functools import partial
 
 import pandas as pd
@@ -7,20 +8,22 @@ import pyproj
 import shapely.ops as ops
 from shapely.geometry import shape
 
+logger = logging.getLogger(__name__)
+
 
 def find_polygon_area(geojson):
     geom = shape(geojson)
     geom_area = ops.transform(
-        partial(
-            pyproj.transform,
-            pyproj.Proj(init='EPSG:4326'),
-            pyproj.Proj(
-                proj='aea',
-                lat_1=geom.bounds[1],
-                lat_2=geom.bounds[3]
-            )
-        ),
-        geom)
+            partial(
+                    pyproj.transform,
+                    pyproj.Proj(init='EPSG:4326'),
+                    pyproj.Proj(
+                            proj='aea',
+                            lat_1=geom.bounds[1],
+                            lat_2=geom.bounds[3]
+                    )
+            ),
+            geom)
     return geom_area.area / 1e6
 
 
@@ -53,16 +56,7 @@ def generate_html(dataframe: pd.DataFrame):
     return html
 
 
-if __name__ == "__main__":
-
-    if len(sys.argv) > 1:
-        experiment_name = sys.argv[1]
-        config_path = sys.argv[2]
-        city_mappings = json.load(open(config_path))
-    else:
-        experiment_name = ""
-        city_mappings = json.load(open("config/city_conf_czechia.json"))
-
+def main(city_mappings: dict, experiment_name: str = "exp"):
     city_records = []
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
@@ -127,8 +121,9 @@ if __name__ == "__main__":
 
     df_decay["rank_cycle_road_share"] = df_decay["cycle_road_share"].rank(ascending=False).astype(int)
     df_decay["rank_cycle_track_share"] = df_decay["cycle_track_share"].rank(ascending=False).astype(int)
-    df_decay["rank_segregated_cycle_track_share"] = df_decay["segregated_cycle_track_share"].rank(ascending=False).astype(
-        int)
+    df_decay["rank_segregated_cycle_track_share"] = df_decay["segregated_cycle_track_share"].rank(
+            ascending=False).astype(
+            int)
 
     merged = df.merge(df_decay, on=["city_name", "osm_id", "area_km2"], suffixes=["", "_decayed"])
 
@@ -160,23 +155,23 @@ if __name__ == "__main__":
          "segregated_cycle_track_share_decayed",
          "parking_per_km2",
          "overall_rank"]].round(3).rename(columns={
-        "city_name": "City name",
-        "osm_id": "OSM id",
-        "area_km2": "Area (km2)",
-        "total_road_length": "Navigable road length (km)",
-        "total_cycling_road_length": "Navigable bike road length (km)",
-        "total_cycle_track_length": "Cycle track length (km)",
-        "total_cycle_lane_length": "Cycle lane length (km)",
-        "total_segregated_cycle_track_length": "Segregated cycle track length (km)",
-        "cycle_road_share": "Cycle road share",
-        "cycle_track_share": "Cycle track share",
-        "cycle_lane_share": "Cycle lane share",
-        "segregated_cycle_track_share": "Segregated track share",
-        "cycle_road_share_decayed": "Cycle road share (weighted)",
-        "cycle_track_share_decayed": "Cycle track share (weighted)",
-        "segregated_cycle_track_share_decayed": "Segregated track share (weighted)",
-        "parking_per_km2": "Parking spaces (per km2)",
-        "overall_rank": "Rank"
+            "city_name": "City name",
+            "osm_id": "OSM id",
+            "area_km2": "Area (km2)",
+            "total_road_length": "Navigable road length (km)",
+            "total_cycling_road_length": "Navigable bike road length (km)",
+            "total_cycle_track_length": "Cycle track length (km)",
+            "total_cycle_lane_length": "Cycle lane length (km)",
+            "total_segregated_cycle_track_length": "Segregated cycle track length (km)",
+            "cycle_road_share": "Cycle road share",
+            "cycle_track_share": "Cycle track share",
+            "cycle_lane_share": "Cycle lane share",
+            "segregated_cycle_track_share": "Segregated track share",
+            "cycle_road_share_decayed": "Cycle road share (weighted)",
+            "cycle_track_share_decayed": "Cycle track share (weighted)",
+            "segregated_cycle_track_share_decayed": "Segregated track share (weighted)",
+            "parking_per_km2": "Parking spaces (per km2)",
+            "overall_rank": "Rank"
     })
 
     final.sort_values("Rank", ascending=True)
@@ -191,3 +186,21 @@ if __name__ == "__main__":
     # write the HTML content to an HTML file
     with open(f"{experiment_name}/_table.cs.sortable.html", "wt") as fout:
         fout.write(html)
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--experiment_name", type=str, default="exp")
+    parser.add_argument("--config_path", type=str, nargs="+", default="config/city_conf_czechia.json")
+    parser.add_argument("--log_level", type=str, default="INFO")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
+
+    # combine multiple config files to one
+    city_mappings = {}
+    for config_path in args.config_path:
+        city_mappings.update(json.load(open(config_path)))
+
+    main(city_mappings, args.experiment_name)
