@@ -80,38 +80,4 @@ def load_city_shapes(city_name, experiment_name=""):
     return shapes
 
 
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        experiment_name = sys.argv[1]
-        config_path = sys.argv[2]
-        city_mappings = json.load(open(config_path))
-    else:
-        experiment_name = ""
-        city_mappings = json.load(open("city_conf_czechia.json"))
 
-    os.makedirs(f"{experiment_name}/routing/routes", exist_ok=True)
-
-    for country_map in city_mappings:
-        for city in city_mappings[country_map]:
-            city_name = list(city.keys())[0]
-            try:
-                if not os.path.exists(f"{experiment_name}/routing/routes/{city_name}.p"):
-                    print(city_name)
-                    shapes = load_city_shapes(city_name, experiment_name=experiment_name)
-                    points = random_points_within(circle_polygon=shapes["circle_polygon"],
-                                                  city_polygon=shapes["city_polygon"],
-                                                  num_points=NUM_POINTS)
-                    routes = []
-                    for i in range(NUM_ROUTES):
-                        start_point = random.choice(points)
-                        end_point = random.choice(points)
-                        routes.append(
-                            (float(start_point.y), float(start_point.x), float(end_point.y), float(end_point.x)))
-
-                    with open(f"{experiment_name}/routing/routes/{city_name}.p", "wb") as f:
-                        pickle.dump(routes, f)
-            except KeyboardInterrupt:
-                raise
-            except Exception as e:
-                print(e)
-                continue

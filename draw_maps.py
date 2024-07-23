@@ -1,11 +1,10 @@
+import json
 import pickle
 import sys
-import json
 
-import tqdm
 import matplotlib.pyplot as plt
+import tqdm
 from pyrosm import OSM
-import networkx as nx
 
 if __name__ == "__main__":
 
@@ -16,7 +15,7 @@ if __name__ == "__main__":
     else:
         osm_city = "Plzeň"
         experiment_name = "data/2014-01-01/"
-        city_mappings = json.load(open("city_conf_czechia.json"))
+        city_mappings = json.load(open("config/city_conf_czechia.json"))
 
     exp_date = experiment_name.split("/")[-2] if experiment_name.endswith("/") else experiment_name.split("/")[-1]
 

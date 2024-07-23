@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # default params
-EXP_NAME="data/2023-06-27"
+EXP_NAME="data/2024-07-22"
 STAGE=1
-CITY_CONF="city_conf_czechia.json"
+CITY_CONF="config/city_conf_czechia.json"
 
 # get shell params form command line
 
@@ -50,7 +50,7 @@ mkdir -p data/"$EXP_NAME"/extracted_maps
 
 if [ $STAGE -le 1 ]; then
     echo "Stage 1: Downloading and extracting maps"
-    python download_and_extract_maps.py "$EXP_NAME" "$CITY_CONF"
+    python download_and_extract_maps_cli.py --experiment_name "$EXP_NAME" --config_path "$CITY_CONF"
 fi
 
 if [ $STAGE -le 2 ]; then

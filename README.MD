@@ -25,7 +25,7 @@ pip install osmium
 
 First downloading and processing script (for Czechia is about 2hrs):
 ```shell
-./_run.sh
+./_run_cyklorank_v1.sh
 ```
 And then utilize the notebook to generate the table and plots.
 
@@ -38,13 +38,13 @@ First, update desired cities in `city_conf.py` and then run:
 
 ```shell
 mkdir extracted_maps
-python download_and_extract_maps.py
+python download_and_extract_maps_cli.py
 ```
 
 Get city polygons
 ```shell
 mkdir city_polygons
-python get_city_polygons.py
+python get_city_polygons_cli.py
 python routing/sample_coordinates.py
 ```
 

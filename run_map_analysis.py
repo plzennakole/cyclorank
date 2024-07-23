@@ -11,7 +11,7 @@ if __name__ == "__main__":
         city_mappings = json.load(open(config_path))
     else:
         experiment_name = ""
-        city_mappings = json.load(open("city_conf_czechia.json"))
+        city_mappings = json.load(open("config/city_conf_czechia.json"))
     os.makedirs(f"{experiment_name}/extracted_maps", exist_ok=True)
     os.makedirs(f"{experiment_name}/results", exist_ok=True)
 
