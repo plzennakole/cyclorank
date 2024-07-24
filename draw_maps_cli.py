@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os.path
 import pickle
 
 import matplotlib.pyplot as plt
@@ -19,6 +20,9 @@ def main(experiment_name: str, city_mappings: dict):
             osm_city = list(city.keys())[0]
 
             filepath = f'{experiment_name}/extracted_maps/{osm_city}.pbf'
+            if not os.path.exists(filepath):
+                logger.error(f"File {filepath} does not exist")
+                continue
             osm = OSM(filepath)
             nodes_driving, edges_driving = osm.get_network(nodes=True, network_type="cycling")
             nodes_all, edges_all = osm.get_network(nodes=True, network_type="all")
@@ -35,13 +39,13 @@ def main(experiment_name: str, city_mappings: dict):
                 m = subset.explore()
                 m.save(f"{experiment_name}/{osm_city}.html")
             except Exception as e:
-                print(e)
+                logger.error(e)
 
             try:
                 m = lanes.explore()
                 m.save(f"{experiment_name}/{osm_city}_lanes.html")
             except Exception as e:
-                print(e)
+                logger.error(e)
 
             try:  # just because of Rumburk with no lanes
                 _ = subset.plot(figsize=(15, 15), column="highway", legend=True, linewidth=5)
@@ -49,7 +53,7 @@ def main(experiment_name: str, city_mappings: dict):
                 plt.savefig(f'{experiment_name}/{osm_city}.png', dpi=300)
                 plt.close()
             except Exception as e:
-                print(e)
+                logger.error(e)
 
             # TODO: fix this
             continue

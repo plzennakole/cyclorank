@@ -72,6 +72,7 @@ def main(city_mappings: dict, experiment_name: str = "exp"):
                 city_record["osm_id"] = osm_id
                 city_record["area_km2"] = find_polygon_area(city_polygon)
                 city_records.append(city_record)
+                logger.info(f"Processed {city_name}")
             except Exception as e:
                 print(f"Error: {e}")
                 continue
@@ -94,7 +95,7 @@ def main(city_mappings: dict, experiment_name: str = "exp"):
                 city_record["area_km2"] = find_polygon_area(city_polygon)
                 city_records_with_decay.append(city_record)
             except Exception as e:
-                print(f"Error: {e}")
+                logger.error(f"Error: {e}")
                 continue
 
     df_decay = pd.DataFrame(city_records_with_decay)
@@ -198,9 +199,19 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
 
+    # switch off FutureWarning for pyproj
+    import warnings
+    warnings.simplefilter(action='ignore', category=FutureWarning)
+
     # combine multiple config files to one
-    city_mappings = {}
-    for config_path in args.config_path:
-        city_mappings.update(json.load(open(config_path)))
+    city_mappings = json.load(open(args.config_path[0]))
+    for config_path in args.config_path[1:]:
+        # do not overwrite the first one
+        _data = json.load(open(config_path))
+        for country_map in _data:
+            if country_map not in city_mappings:
+                city_mappings[country_map] = _data[country_map]
+            else:
+                city_mappings[country_map].extend(_data[country_map])
 
     main(city_mappings, args.experiment_name)

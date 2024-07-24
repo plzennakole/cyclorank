@@ -20,7 +20,8 @@ def extract_map(city_name, relation_id, full_map_path, experiment_name="exp"):
     logger.info(f"Working on map for {city_name} - id {relation_id}")
     logger.info("Extracting boundary")
     subprocess.run(
-        f"osmium getid -r -t {experiment_name}/full_maps/{full_map_path} r{relation_id} -o {experiment_name}/extracted_maps/{city_name}_boundary.pbf",
+        f"osmium getid --overwrite -r -t {experiment_name}/full_maps/{full_map_path} r{relation_id} -o"
+        f" {experiment_name}/extracted_maps/{city_name}_boundary.pbf",
         shell=True)
     logger.info("Extracting city")
     subprocess.run(f"osmium extract -p {experiment_name}/extracted_maps/{city_name}_boundary.pbf "
@@ -69,7 +70,7 @@ def main(country_to_cities: dict, experiment_name: str = "exp", remove_country_m
                     os.remove(f"{experiment_name}/full_maps/{full_map_path}")
             raise KeyboardInterrupt
         except Exception as e:
-            print(e)
+            logger.error(e)
             continue
 
 

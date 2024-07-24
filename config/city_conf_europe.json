@@ -108,7 +108,7 @@
                                       {"Craiova": {"osm_id": 9624263, "centre": [44.3190159, 23.7965614]}},
                                       {"Galati": {"osm_id": 10487103, "centre": [45.4338215, 28.0549395]}}],
     "europe/slovakia-latest.osm.pbf": [{"Bratislava": {"osm_id": 1702499, "centre": [48.1516988, 17.1093063]}},
-                                      {"Trnava": {"osm_id": 2355184, "centre": [48.3775, 17.5872]}}],
+                                      {"Trnava": {"osm_id": 2204009, "centre": [48.3775, 17.5872]}}],
     "europe/slovenia-latest.osm.pbf": [{"Ljubljana": {"osm_id": 1675898, "centre": [46.05112438995925, 14.506328521211604]}}],
     "europe/spain-latest.osm.pbf": [{"Madrid": {"osm_id": 11179, "centre": [40.4167047, -3.7035825]}},
                                     {"Barcelona": {"osm_id": 347883, "centre": [41.3828939, 2.1774322]}},
