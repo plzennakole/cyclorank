@@ -23,7 +23,13 @@ def main(experiment_name: str, city_mappings: dict):
             if not os.path.exists(filepath):
                 logger.error(f"File {filepath} does not exist")
                 continue
-            osm = OSM(filepath)
+
+            try:
+                osm = OSM(filepath)
+            except Exception as e:
+                logger.error(e)
+                continue
+
             nodes_driving, edges_driving = osm.get_network(nodes=True, network_type="cycling")
             nodes_all, edges_all = osm.get_network(nodes=True, network_type="all")
             drive_net = osm.get_network(network_type="cycling")
