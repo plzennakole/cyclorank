@@ -28,9 +28,9 @@ def extract_map(city_name, relation_id, full_map_path, experiment_name="exp"):
                    f"{experiment_name}/full_maps/{full_map_path} -o {experiment_name}/extracted_maps/{city_name}.pbf",
                    shell=True)
 
-    if os.path.exists(f"{experiment_name}/extracted_maps/{city_name}.pbf"):
+    if (os.path.exists(f"{experiment_name}/extracted_maps/{city_name}.pbf")
+            and os.path.exists(f"{experiment_name}/extracted_maps/{city_name}_boundary.pbf")):
         logger.info("Removing boundary file")
-        subprocess.run(f"rm {experiment_name}/extracted_maps/{city_name}_boundary.pbf", shell=True)
         os.remove(f"{experiment_name}/extracted_maps/{city_name}_boundary.pbf")
 
 
