@@ -80,7 +80,12 @@ fi
 
 if [ $STAGE -le 6 ]; then
     echo "Stage 6: Convert results to tables"
+    # all
     python results_to_csv_cli.py --experiment_name "$EXP_NAME" --config_path config/city_conf_czechia.json config/city_conf_europe.json --log_level $LOGLEVEL
+    # only CZ
+    python results_to_csv_cli.py --experiment_name "$EXP_NAME/Czechia" --config_path config/city_conf_czechia.json --log_level $LOGLEVEL
+    # only Europe
+    python results_to_csv_cli.py --experiment_name "$EXP_NAME/Europe" --config_path config/city_conf_europe.json --log_level $LOGLEVEL
 fi
 
 if [ $STAGE -le 7 ]; then
