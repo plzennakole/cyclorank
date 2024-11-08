@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 from functools import partial
 
 import pandas as pd
@@ -56,7 +57,7 @@ def generate_html(dataframe: pd.DataFrame):
     return html
 
 
-def main(city_mappings: dict, experiment_name: str = "exp"):
+def main(city_mappings: dict, experiment_name: str = "exp", output_path: str = "exp"):
     city_records = []
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
@@ -116,15 +117,22 @@ def main(city_mappings: dict, experiment_name: str = "exp"):
     df_decay["segregated_cycle_track_share"] = df_decay["total_segregated_cycle_track_length"] / df_decay[
         "overall_road_length"]
 
-    df["rank_cycle_road_share"] = df["cycle_road_share"].rank(ascending=False).astype(int)
-    df["rank_cycle_track_share"] = df["cycle_track_share"].rank(ascending=False).astype(int)
-    df["rank_segregated_cycle_track_share"] = df["segregated_cycle_track_share"].rank(ascending=False).astype(int)
-
-    df_decay["rank_cycle_road_share"] = df_decay["cycle_road_share"].rank(ascending=False).astype(int)
-    df_decay["rank_cycle_track_share"] = df_decay["cycle_track_share"].rank(ascending=False).astype(int)
-    df_decay["rank_segregated_cycle_track_share"] = df_decay["segregated_cycle_track_share"].rank(
-            ascending=False).astype(
+    # Skip NaN values while ranking
+    # Skip NaN values while ranking and fill NaN with -1 before converting to int
+    df["rank_cycle_road_share"] = df["cycle_road_share"].rank(ascending=False, na_option='keep').fillna(-1).astype(int)
+    df["rank_cycle_track_share"] = df["cycle_track_share"].rank(ascending=False, na_option='keep').fillna(-1).astype(
             int)
+    df["rank_segregated_cycle_track_share"] = df["segregated_cycle_track_share"].rank(ascending=False,
+                                                                                      na_option='keep').fillna(
+            -1).astype(int)
+
+    df_decay["rank_cycle_road_share"] = df_decay["cycle_road_share"].rank(ascending=False, na_option='keep').fillna(
+            -1).astype(int)
+    df_decay["rank_cycle_track_share"] = df_decay["cycle_track_share"].rank(ascending=False, na_option='keep').fillna(
+            -1).astype(int)
+    df_decay["rank_segregated_cycle_track_share"] = df_decay["segregated_cycle_track_share"].rank(ascending=False,
+                                                                                                  na_option='keep').fillna(
+            -1).astype(int)
 
     merged = df.merge(df_decay, on=["city_name", "osm_id", "area_km2"], suffixes=["", "_decayed"])
 
@@ -177,15 +185,15 @@ def main(city_mappings: dict, experiment_name: str = "exp"):
 
     final.sort_values("Rank", ascending=True)
 
-    with open(f"{experiment_name}/_table.cs.html", "wt") as fout:
+    with open(f"{output_path}/_table.cs.html", "wt") as fout:
         fout.write(final.sort_values("Rank", ascending=True).to_html(index=False))
 
     # write to CSV table
-    final.sort_values("Rank", ascending=True).to_csv(f"{experiment_name}/_table.cs.csv", index=False)
+    final.sort_values("Rank", ascending=True).to_csv(f"{output_path}/_table.cs.csv", index=False)
 
     html = generate_html(final.sort_values("Rank", ascending=True))
     # write the HTML content to an HTML file
-    with open(f"{experiment_name}/_table.cs.sortable.html", "wt") as fout:
+    with open(f"{output_path}/_table.cs.sortable.html", "wt") as fout:
         fout.write(html)
 
 
@@ -193,6 +201,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment_name", type=str, default="exp")
+    parser.add_argument("--output_path", type=str, default="exp")
     parser.add_argument("--config_path", type=str, nargs="+", default="config/city_conf_czechia.json")
     parser.add_argument("--log_level", type=str, default="INFO")
     args = parser.parse_args()
@@ -201,6 +210,7 @@ if __name__ == "__main__":
 
     # switch off FutureWarning for pyproj
     import warnings
+
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
     # combine multiple config files to one
@@ -214,4 +224,5 @@ if __name__ == "__main__":
             else:
                 city_mappings[country_map].extend(_data[country_map])
 
-    main(city_mappings, args.experiment_name)
+    os.makedirs(args.output_path, exist_ok=True)
+    main(city_mappings, args.experiment_name, output_path=args.output_path)

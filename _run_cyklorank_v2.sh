@@ -74,8 +74,8 @@ fi
 
 if [ $STAGE -le 5 ]; then
     echo "Stage 5: Final results"
-    python run_map_analysis_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" --log_level $LOGLEVEL
-    python run_map_analysis_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json" --log_level $LOGLEVEL
+    python run_map_analysis_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" --log_level $LOGLEVEL --force-rewrite
+    python run_map_analysis_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json" --log_level $LOGLEVEL --force-rewrite
 fi
 
 if [ $STAGE -le 6 ]; then
@@ -83,13 +83,17 @@ if [ $STAGE -le 6 ]; then
     # all
     python results_to_csv_cli.py --experiment_name "$EXP_NAME" --config_path config/city_conf_czechia.json config/city_conf_europe.json --log_level $LOGLEVEL
     # only CZ
-    python results_to_csv_cli.py --experiment_name "$EXP_NAME/Czechia" --config_path config/city_conf_czechia.json --log_level $LOGLEVEL
+    python results_to_csv_cli.py --experiment_name "$EXP_NAME" --config_path config/city_conf_czechia.json \
+                                 --output_path "$EXP_NAME/Czechia" --log_level $LOGLEVEL
     # only Europe
-    python results_to_csv_cli.py --experiment_name "$EXP_NAME/Europe" --config_path config/city_conf_europe.json --log_level $LOGLEVEL
+    python results_to_csv_cli.py --experiment_name "$EXP_NAME" --config_path config/city_conf_europe.json \
+                                 --output_path "$EXP_NAME/Europe" --log_level $LOGLEVEL
 fi
 
 if [ $STAGE -le 7 ]; then
     echo "Stage 7: Draw and save maps"
-    python draw_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" --log_level $LOGLEVEL
-    python draw_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json" --log_level $LOGLEVEL
+    python draw_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" \
+                            --output_path "$EXP_NAME/Czechia" --log_level $LOGLEVEL
+    python draw_maps_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json" \
+                            --output_path "$EXP_NAME/Europe" --log_level $LOGLEVEL
 fi

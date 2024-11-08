@@ -9,15 +9,14 @@ from get_osmium_data_cli import osm_for_one_city
 logger = logging.getLogger(__name__)
 
 
-def main(city_mappings: dict, experiment_name: str = "exp"):
+def main(city_mappings: dict, experiment_name: str = "exp", force_rewrite=False):
     for country_map in city_mappings:
         logger.info(f"Working on {country_map}")
         for city in city_mappings[country_map]:
             city_name = list(city.keys())[0]
             try:
-                map_path = f"{experiment_name}/extracted_maps/{city_name}.pbf"
                 results_path = f"{experiment_name}/results/{city_name}_decay.json"
-                if os.path.exists(results_path):
+                if os.path.exists(results_path) and not force_rewrite:
                     logger.info(f"Skipping {city_name}")
                 else:
                     logger.info(f"Working on {city_name}")
@@ -36,6 +35,7 @@ if __name__ == "__main__":
     parser.add_argument("--experiment_name", type=str, default="exp")
     parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
     parser.add_argument("--log_level", type=str, default="INFO")
+    parser.add_argument("--force-rewrite", action='store_true')
     args = parser.parse_args()
 
     logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
