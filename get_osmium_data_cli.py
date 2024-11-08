@@ -383,8 +383,8 @@ def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp"):
 
     return summary
 
-def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
 
+def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
             city_name = list(city.keys())[0]
@@ -398,18 +398,27 @@ def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
                 continue
 
 
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment_name", type=str, default="exp")
     parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
     parser.add_argument("--log_level", type=str, default="INFO")
+    parser.add_argument("--decay", action="store_true", help="Apply decay configuration")
     args = parser.parse_args()
 
     logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
 
-    city_mappings = json.load(open(args.config_path))
+    try:
+        with open(args.config_path) as f:
+            city_mappings = json.load(f)
+    except FileNotFoundError:
+        logger.error(f"Config file not found: {args.config_path}")
+        sys.exit(1)
+    except json.JSONDecodeError:
+        logger.error(f"Error decoding JSON from config file: {args.config_path}")
+        sys.exit(1)
+
     os.makedirs(f"{args.experiment_name}/results", exist_ok=True)
 
-    main(city_mappings, args.experiment_name, decay=False)
+    main(city_mappings, args.experiment_name, decay=args.decay)
