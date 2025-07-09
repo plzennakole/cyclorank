@@ -17,6 +17,7 @@ from shapely.geometry import shape, Point
 
 logger = logging.getLogger(__name__)
 
+
 def haversine(lat1, lon1, lat2, lon2):
     """
     Calculate the great circle distance between two points

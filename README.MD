@@ -25,4 +25,4 @@ First downloading and processing script (about 8hrs):
 ```shell
 ./_run_cyklorank_v2.sh
 ```
-And then utilize the notebook to generate the table and plots.
+And then run the notebook to generate the table and plots.

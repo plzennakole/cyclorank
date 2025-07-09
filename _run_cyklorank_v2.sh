@@ -4,7 +4,7 @@ set -eu
 set -o pipefail
 
 # default params
-EXP_NAME="data/2024-07-22"
+EXP_NAME="data/2025-07-09"
 STAGE=1
 LOGLEVEL="INFO"
 
