@@ -11,7 +11,7 @@ from pyrosm import OSM
 logger = logging.getLogger(__name__)
 
 
-def main(experiment_name: str, city_mappings: dict, output_path: str):
+def main(experiment_name: str, city_mappings: dict, output_path: str, force_rewrite=False):
     exp_date = experiment_name.split("/")[-2] if experiment_name.endswith("/") else experiment_name.split("/")[-1]
 
     for country_map in city_mappings:
@@ -20,7 +20,7 @@ def main(experiment_name: str, city_mappings: dict, output_path: str):
             logger.info(f"Working on {osm_city}")
 
             # skip if the file does exist
-            if os.path.exists(f"{output_path}/{osm_city}.html"):
+            if os.path.exists(f"{output_path}/{osm_city}.html") and not force_rewrite:
                 logger.info(f"Skipping {osm_city}")
                 continue
 
@@ -70,6 +70,17 @@ def main(experiment_name: str, city_mappings: dict, output_path: str):
             except Exception as e:
                 logger.error(e)
 
+            # Export the whole road network
+            osm = OSM(filepath)
+            nodes_driving, edges_driving = osm.get_network(nodes=True, network_type="driving+service")
+            nodes_all, edges_all = osm.get_network(nodes=True, network_type="driving+service")
+            drive_net = osm.get_network(network_type="driving+service")
+            # and save
+            # drive_net.to_file(f"{output_path}/{osm_city}_all.geojson", driver="GeoJSON")
+            # to HTML
+            m = drive_net.explore()
+            m.save(f"{output_path}/{osm_city}_whole_network.html")
+
             # TODO: fix this
             continue
 
@@ -96,6 +107,7 @@ if __name__ == "__main__":
     parser.add_argument("--experiment_name", type=str, default="exp")
     parser.add_argument("--output_path", type=str, default="exp")
     parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
+    parser.add_argument("--force-rewrite", action='store_true')
     parser.add_argument("--log_level", type=str, default="INFO")
     args = parser.parse_args()
 
@@ -103,4 +115,4 @@ if __name__ == "__main__":
 
     city_mappings = json.load(open(args.config_path))
 
-    main(args.experiment_name, city_mappings, args.output_path)
+    main(args.experiment_name, city_mappings, args.output_path, args.force_rewrite)
