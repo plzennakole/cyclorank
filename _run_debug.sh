@@ -29,7 +29,7 @@ while :; do
     shift 2
     ;;
   -h | --help)
-    "This is a script for running the map analysis pipeline"
+    echo "This is a script for running the map analysis pipeline"
     exit 2
     ;;
   --)
