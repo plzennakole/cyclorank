@@ -352,7 +352,7 @@ class AmenityListHandler(o.SimpleHandler):
             self.parking_counter += 1
 
 
-def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp"):
+def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp", method="cze_v1.1"):
     with open(f"{experiment_name}/city_polygons/{city_name.lower()}.geojson") as f:
         city_json = json.load(f)
 
@@ -366,7 +366,7 @@ def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp"):
     else:
         decay_conf = None
 
-    handler = AmenityListHandler(city_centroid, decay_conf=decay_conf)
+    handler = AmenityListHandler(city_centroid, decay_conf=decay_conf, method=method)
     handler.apply_file(osmfile, locations=True)
 
     # Multiply distances by 2 to count both ways
@@ -399,13 +399,14 @@ def osm_for_one_city(osmfile, city_name, decay=False, experiment_name="exp"):
     return summary
 
 
-def main(city_mappings: dict, experiment_name: str = "exp", decay=False):
+def main(city_mappings: dict, experiment_name: str = "exp", decay=False, method="cze_v1.1"):
     for country_map in city_mappings:
         for city in city_mappings[country_map]:
             city_name = list(city.keys())[0]
             try:
                 osm_file = f"{experiment_name}/extracted_maps/{city_name}.pbf"
-                osm_for_one_city(osm_file, city_name, decay=decay, experiment_name=experiment_name)
+                osm_for_one_city(osm_file, city_name, decay=decay,
+                                 experiment_name=experiment_name, method=method)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
@@ -438,4 +439,4 @@ if __name__ == "__main__":
 
     os.makedirs(f"{args.experiment_name}/results", exist_ok=True)
 
-    main(city_mappings, args.experiment_name, decay=args.decay)
+    main(city_mappings, args.experiment_name, decay=args.decay, method=args.method)
