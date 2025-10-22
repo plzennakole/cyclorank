@@ -37,7 +37,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
 
 class AmenityListHandler(o.SimpleHandler):
-    def __init__(self, city_centroid, decay_conf=None):
+    def __init__(self, city_centroid, decay_conf=None, method="cze_v1.1"):
         super(AmenityListHandler, self).__init__()
         self.total_road_length = 0
         self.total_cycling_road_length = 0
@@ -52,6 +52,14 @@ class AmenityListHandler(o.SimpleHandler):
 
         self.decay_conf = decay_conf
         self.way_ids = {}
+
+        self.method = method
+        if self.method == "original":
+            self.parse_way_data = self.parse_way_data_original
+        elif self.method in ["cze_v1.0", "cze_v1.1"]:
+            pass  # Default parse_way_data is correct for these versions
+        else:
+            raise ValueError(f"Unknown method: {self.method}")
 
     def apply_weight_decay(self, road_distance, road_distance_from_centroid):
         effective_distance = np.minimum(np.maximum(road_distance_from_centroid - self.decay_conf["lower_threshold"], 0),
@@ -179,8 +187,12 @@ class AmenityListHandler(o.SimpleHandler):
             self.total_cycling_road_length += cycle_lane_length + cycle_track_length
 
     def parse_way_data(self, w):
-        """CZE version 1.0
-            Based on https://wiki.openstreetmap.org/wiki/Bicycle"""
+        """CZE version 1.1
+            Based on https://wiki.openstreetmap.org/wiki/Bicycle
+
+            Changelog:
+            v1.0 first version used in 2023 and 2024
+            v1.1 updated weight to 1.25 for segregated tracks"""
         if "highway" in w.tags:
 
             highway_length = o.geom.haversine_distance(w.nodes)
@@ -302,6 +314,8 @@ class AmenityListHandler(o.SimpleHandler):
 
                 if self.parse_tag(w, "segregated", ["yes"]):
                     segregated_track_length = cycle_track_length
+                    if self.method == "cze_v1.1":
+                        cycle_track_length = cycle_track_length * 1.25  # Bonus cycle lanes on segregated tracks
 
             # Bicycle dismount
             if (
@@ -406,6 +420,8 @@ if __name__ == "__main__":
     parser.add_argument("--config_path", type=str, default="config/city_conf_czechia.json")
     parser.add_argument("--log_level", type=str, default="INFO")
     parser.add_argument("--decay", action="store_true", help="Apply decay configuration")
+    parser.add_argument("--method", choices=["original", "cze_v1.0", "cze_v1.1"], default="cze_v1.1", help="Method for "
+                                                                                                   "parsing way data")
     args = parser.parse_args()
 
     logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
