@@ -9,7 +9,7 @@ STAGE=1
 LOGLEVEL="INFO"
 CONFIG_PATH="config/city_conf_czechia_debug.json"
 
-# get shell params form command line
+# get shell params from command line
 
 # parsing args
 SHORT=e:,s:,c:,h
