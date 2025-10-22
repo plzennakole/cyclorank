@@ -314,7 +314,8 @@ class AmenityListHandler(o.SimpleHandler):
 
                 if self.parse_tag(w, "segregated", ["yes"]):
                     segregated_track_length = cycle_track_length
-                    cycle_track_length = cycle_track_length * 1.25  # Bonus cycle lanes on segregated tracks
+                    if self.method == "cze_v1.1":
+                        cycle_track_length = cycle_track_length * 1.25  # Bonus cycle lanes on segregated tracks
 
             # Bicycle dismount
             if (
