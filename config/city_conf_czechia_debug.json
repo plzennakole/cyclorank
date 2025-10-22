@@ -1,0 +1,22 @@
+{
+  "europe/czech-republic-230101.osm.pbf": [
+    {
+      "Plze\u0148": {
+        "osm_id": 438344,
+        "centre": [
+          49.7478,
+          13.3774
+        ]
+      }
+    },
+     {
+      "Pardubice": {
+        "osm_id": 440145,
+        "centre": [
+          50.03858,
+          15.77912
+        ]
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@ set -eu
 set -o pipefail
 
 # default params
-EXP_NAME="data/2025-07-09"
+EXP_NAME="data/2025-10-01"
 STAGE=1
 LOGLEVEL="INFO"
 
@@ -62,6 +62,7 @@ fi
 
 if [ $STAGE -le 3 ]; then
     echo "Stage 3: Getting distances for all cities"
+    # default method now is cze_v1.1
     python get_osmium_data_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_czechia.json" --log_level $LOGLEVEL
     python get_osmium_data_cli.py --experiment_name "$EXP_NAME" --config_path "config/city_conf_europe.json" --log_level $LOGLEVEL
 fi
