@@ -29,5 +29,5 @@ And then run the notebook to generate the table and plots.
 
 ## Change log
 
-v1.0 first version used in 2023 and 2024
-v1.1 updated weight to 1.25 for segregated tracks
+- v1.0 first version used in 2023 and 2024
+- v1.1 updated weight to 1.25 for segregated tracks
