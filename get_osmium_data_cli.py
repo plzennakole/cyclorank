@@ -57,7 +57,7 @@ class AmenityListHandler(o.SimpleHandler):
         if self.method == "original":
             self.parse_way_data = self.parse_way_data_original
         elif self.method in ["cze_v1.0", "cze_v1.1"]:
-            self.parse_way_data = self.parse_way_data
+            pass  # Default parse_way_data is correct for these versions
         else:
             raise ValueError(f"Unknown method: {self.method}")
 
