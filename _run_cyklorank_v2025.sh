@@ -4,39 +4,41 @@ set -eu
 set -o pipefail
 
 # default params
-EXP_NAME="data/2025-10-01"
+EXP_NAME="data/2026-01-21"
 STAGE=1
 LOGLEVEL="INFO"
 
 # get shell params form command line
 
-# parsing args
-SHORT=e:,s:,c:,h
-LONG=stage:,exp-name:,city-conf:,help
-OPTS=$(getopt -a -n weather --options $SHORT --longoptions $LONG -- "$@")
-
-eval set -- "$OPTS"
-
-while :; do
+# parsing args (manual parsing for macOS compatibility)
+while [[ $# -gt 0 ]]; do
   case "$1" in
-  -s | --stage)
+  -s|--stage)
     STAGE="$2"
     shift 2
     ;;
-  -n | --exp-name)
+  -n|--exp-name)
     EXP_NAME="$2"
     shift 2
     ;;
-  -h | --help)
-    "This is a script for running the map analysis pipeline"
-    exit 2
+  -h|--help)
+    echo "This is a script for running the map analysis pipeline"
+    echo "Usage: $0 [OPTIONS]"
+    echo "  -s, --stage STAGE        Start from stage STAGE (default: 1)"
+    echo "  -n, --exp-name NAME      Experiment name/path (default: data/2026-01-21)"
+    echo "  -h, --help               Show this help message"
+    exit 0
     ;;
   --)
     shift
     break
     ;;
+  -*)
+    echo "Unknown option: $1"
+    exit 1
+    ;;
   *)
-    echo "Unexpected option: $1"
+    break
     ;;
   esac
 done
